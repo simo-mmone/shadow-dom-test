@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- problematic style -->
+    <style>
+        .collapse {
+            visibility: collapse;
+        }
+    </style>
+
+    <!-- shadow dom container -->
+    <div id="shadow"></div>
+
+    <!-- nuxt stuff (i've removed loading styling for simplicity) -->
+    <div id="nuxt-container">
+        <div id="__nuxt">
+            <div id="nuxt-loading" aria-live="polite" role="status">
+                <div>Loading...</div>
+            </div>
+        </div>
+        <link href="/appbibione/_nuxt/css/a87f4bd.css" rel="stylesheet" type="text/css">
+        <link href="/appbibione/_nuxt/css/3673c44.css" rel="stylesheet" type="text/css">
+    </div>
+    <script>window.__NUXT__ = { config: { _app: { basePath: "/appbibione/", assetsPath: "/appbibione/_nuxt/", cdnURL: null } } }</script>
+    <script src="/appbibione/_nuxt/dee14de.js"></script>
+    <script src="/appbibione/_nuxt/a153b21.js"></script>
+    <script src="/appbibione/_nuxt/4bef6c8.js"></script>
+    <script src="/appbibione/_nuxt/aa5f70d.js"></script>
+
+
+    <!-- move to shadow dom -->
+    <script>
+        let stop = false;
+        // observe when #nuxt-loading is removed from the dom
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    const nuxtLoading = document.getElementById('nuxt-loading');
+                    if (!nuxtLoading && !stop) {
+                        stop = true;
+                        // stop observing
+                        observer.disconnect();
+                        console.log('nuxt loading removed');
+                        // wait for nuxt to finish loading
+                        setTimeout(() => {
+                            moveNuxtToShadowDom();
+                        }, 2000);
+                    }
+                }
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true
+        });
+
+        function moveNuxtToShadowDom() {
+            const shadow = document.getElementById('shadow');
+            const nuxt = document.getElementById('nuxt-container');
+            const shadowRoot = shadow.attachShadow({
+                mode: 'open'
+            });
+            shadowRoot.appendChild(nuxt);
+        }
+
+    </script>
+
+
+</body>
+
+</html>
